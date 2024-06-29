@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import './styles/Home.css';
+import { Link } from 'react-router-dom';
+import DonationForm from './DonateForm/DonateForm';
+import Footer from './Footer'; // Import the Footer component
 import img3 from './images/about1.png'; // Ensure you have this image in the specified path
 import missionImg from './images/image.png'; // Update with the correct path
-import { Link } from 'react-router-dom';
-import Footer from './Footer'; // Import the Footer component
+import './styles/Home.css';
 
 const Home = () => {
   // State variables for metrics
@@ -23,9 +24,10 @@ const Home = () => {
           <h2>Our Helping To The World.</h2>
           <p>Onsectetur adipiscing elit, sed do eiusmod tempor incididunt ut bore et dolore magnat, sed do eiusmod.</p>
           <div className="mission-button">
-            <Link to="/donate">
+            {/* <Link to="/donate">
               <button className="donate-button">Donate</button>
-            </Link>
+            </Link> */}
+            <DonationForm/>
             <div className="phone">
               <i className="fas fa-phone-alt"></i> +12 1325 41
             </div>

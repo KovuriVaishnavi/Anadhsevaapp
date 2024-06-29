@@ -67,7 +67,7 @@ const DonationForm = () => {
 
       <Modal show={showModal} onHide={() => setShowModal(false)} dialogClassName="custom-modal">
         <Modal.Header closeButton >
-          <Modal.Title>Donate Food Items</Modal.Title>
+          <Modal.Title>Donate</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <form onSubmit={handleSubmit} style={styles.form}>
