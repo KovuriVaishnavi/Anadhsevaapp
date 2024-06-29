@@ -1,8 +1,24 @@
-const { request } = require("express");
 const Donation = require("../Models/donation.model"); // Adjust the path as per your project structure
 const ReceiverRequest = require("../Models/request.model");
 const Transaction = require("../Models/transaction.model.js");
+const createReceiverRequest = async (req, res) => {
+  const { receiverName, receiverId, loc, foodItems, quantity } = req.body;
 
+  try {
+    const newRequest = new ReceiverRequest({
+      receiverName,
+      receiverId,
+      location: loc,
+      foodItems,
+      quantity,
+    });
+
+    const savedRequest = await newRequest.save();
+    res.status(201).json({ msg: 'Request added successfully', savedRequest });
+  } catch (error) {
+    res.status(400).json({ message: 'Error creating request', error });
+  }
+};
 const getAllRequests = async (req, res) => {
   try {
     const requests = await Donation.find();
@@ -48,6 +64,7 @@ module.exports = {
   getCompletedRequests,
   getFulfilledReceiverRequests,
   getvolunteeredRequests,
+  createReceiverRequest
 };
 
 // controllers/requestController.js

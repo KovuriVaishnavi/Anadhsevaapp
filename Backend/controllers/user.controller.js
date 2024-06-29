@@ -1,6 +1,6 @@
 const userModel = require("../Models/user.model");
 const jwt = require("jsonwebtoken");
-const SignUpuser = async (req, res) => {
+const registerUser = async (req, res) => {
   try {
     const existingUser = await userModel.findOne({ email: req.body.email });
     if (existingUser) {
@@ -10,12 +10,13 @@ const SignUpuser = async (req, res) => {
     }
     const user = await userModel.create({
       email: req.body.email,
-      phoneno: req.body.phoneno,
+      phone: req.body.phone,
       location: {
-        name: req.body.location,
-        lat: navigator.geolocation.latitude,
-        long: navigator.geolocation.longitude,
+        name: req.body.address,
+        lat: req.body.lat,
+        long: req.body.long,
       },
+      name: req.body.name,
     });
     res.status(201).json({ msg: "User created successfully", user: user });
   } catch (error) {
@@ -23,12 +24,11 @@ const SignUpuser = async (req, res) => {
   }
 };
 
-const LoginUser = async (req, res) => {
+const loginUser = async (req, res) => {
   try {
     const email = req.body.email;
-    const password = req.body.password;
     const user = await userModel.findOne({ email: email });
-    if (!validPass)
+    if (!user)
       return res
         .status(401)
         .json({ message: "Invalid login credentials! Please check it." });
@@ -36,15 +36,13 @@ const LoginUser = async (req, res) => {
     let payload = { email: user.email };
     const token = jwt.sign(payload, "SecretKey", { expiresIn: "1h" });
     res.status(200).json({
-      token: token,
-      email: email,
-      password: password,
-      role: user.role,
+      token,
+      user,
     });
   } catch (error) {
     res
-      .status(200)
+      .status(500)
       .json({ msg: "user login unsuccessful", error: error.message });
   }
 };
-module.exports = { SignUpuser, LoginUser };
+module.exports = { registerUser, loginUser };
