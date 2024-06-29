@@ -24,7 +24,7 @@ export default function VolunteerActiveRequests() {
 
   const getTransactions = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/volunteer");
+      const response = await axios.get("http://localhost:3001/api/volunteer");
       setTransactions(response.data);
     } catch (error) {
       console.error("Error fetching transactions:", error);
@@ -135,7 +135,7 @@ export default function VolunteerActiveRequests() {
     let templist = transactions.filter((x) => x._id !== transaction._id);
     setstatus(transaction, "active");
     setTransactions([...templist, transaction]);
-    await axios.post("http://localhost:5000/api/volunteer", transactions);
+    await axios.post("http://localhost:3001/api/volunteer", transactions);
   }
 
   return (

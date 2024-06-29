@@ -5,10 +5,12 @@ const {
   getCompletedRequests,
   getFulfilledReceiverRequests,
   getvolunteeredRequests,
+  createReceiverRequest
 } = require("../controllers/request.controller");
 
 // Route to get all requests
 router.get("/", getAllRequests);
+router.post("/", createReceiverRequest);
 
 // Route to get completed requests
 router.get("/donated", getCompletedRequests);

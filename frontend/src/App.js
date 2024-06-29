@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Header from './components/Header';
 import Home from './components/Home';
+import RequestForm from './components/RequestForm/RequestForm'
 import Contact from './components/Contact';
 import Aboutus from './components/Aboutus';
 import AdminDashboard from './components/Admindashboard';
@@ -13,7 +14,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
 import UserRegistration from './components/userRegistration';
 import UserTypeSelection from './components/UserTypeSelection';
-import VolunteerDashboard from './components/VolunteerDashBoard/volunteerDashboard';
+import VolunteerDashboard from './components/VolunteerDashboard';
 import Log from './components/Logs/log';
 import Donate from "./components/Donate";
 
@@ -36,6 +37,7 @@ function App() {
           <Route path="/volunteer/dashboard" element={<VolunteerDashboard />} />
           <Route path="/volunteer" element={<VolunteerActiveRequests/>} />
           <Route path="/donate" element={<Donate />} />
+          <Route path="/request" element={<RequestForm />} />
           <Route path="/log" element={<Log />} />
         </Routes>
       </div>
