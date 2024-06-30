@@ -9,3 +9,4 @@ const getAllTransactions = errorHandler(async (req, res) => {
 
   res.json(transactions);
 });
+module.exports = { getAllTransactions };

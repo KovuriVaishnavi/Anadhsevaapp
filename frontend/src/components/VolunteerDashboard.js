@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import bootstrap from "bootstrap/dist/css/bootstrap.min.css";
 import "./styles/VolunteerDashboard.css";
 
 export default function VolunteerActiveRequests() {

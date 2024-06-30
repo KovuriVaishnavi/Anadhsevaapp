@@ -19,7 +19,7 @@ const UserTypeSelection = () => {
       <h1 className="title">Select User Type</h1>
       <div className="user-types">
         <div className="user-type-card" onClick={() => handleSelection('donor')}>
-          <h2>Donor</h2>
+          <h2>Donate</h2>
           <p>Contribute to the cause by donating food or resources.</p>
         </div>
         <div className="user-type-card" onClick={() => handleSelection('volunteer')}>
@@ -27,7 +27,7 @@ const UserTypeSelection = () => {
           <p>Help us by volunteering your time and effort.</p>
         </div>
         <div className="user-type-card" onClick={() => handleSelection('receiver')}>
-          <h2>Receiver</h2>
+          <h2>Request</h2>
           <p>Receive food and resources for those in need.</p>
         </div>
       </div>

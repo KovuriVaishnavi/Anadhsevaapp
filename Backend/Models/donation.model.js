@@ -2,8 +2,16 @@ const mongoose = require("mongoose");
 
 const donationSchema = new mongoose.Schema(
   {
-    donorId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-    loc: { type: String, required: true },
+    donorId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    location: {
+      name: { type: String, required: true },
+      lat: { type: Number, required: true },
+      long: { type: Number, required: true },
+    },
     donarName: { type: String, required: true },
     foodItems: [{ type: String, required: true }],
     quantity: { type: Number, required: true },

@@ -6,8 +6,11 @@ const AdminDashboard = () => {
     const [metrics, setMetrics] = useState({
         totalDonations: 0,
         totalReceivers: 0,
-        totalVolunteers: 0
+        totalVolunteers: 0,
+        inventoryStatus: { items: 0, categories: 0 },
     });
+    const [activities, setActivities] = useState([]);
+    const [pendingRequests, setPendingRequests] = useState([]);
 
     useEffect(() => {
         axios.get('/api/statistics')
@@ -16,6 +19,22 @@ const AdminDashboard = () => {
             })
             .catch(error => {
                 console.error('There was an error fetching the statistics!', error);
+            });
+
+        axios.get('/api/activities')
+            .then(response => {
+                setActivities(response.data);
+            })
+            .catch(error => {
+                console.error('There was an error fetching the activities!', error);
+            });
+
+        axios.get('/api/pending-requests')
+            .then(response => {
+                setPendingRequests(response.data);
+            })
+            .catch(error => {
+                console.error('There was an error fetching the pending requests!', error);
             });
     }, []);
 
@@ -52,6 +71,30 @@ const AdminDashboard = () => {
                     <h2>Total Volunteers</h2>
                     <p>{metrics.totalVolunteers}</p>
                 </div>
+                <div className="metric-card">
+                    <h2>Inventory Items</h2>
+                    <p>{metrics.inventoryStatus.items}</p>
+                </div>
+                <div className="metric-card">
+                    <h2>Inventory Categories</h2>
+                    <p>{metrics.inventoryStatus.categories}</p>
+                </div>
+            </div>
+            <div className="recent-activities">
+                <h2>Recent Activities</h2>
+                <ul>
+                    {activities.map((activity, index) => (
+                        <li key={index}>{activity}</li>
+                    ))}
+                </ul>
+            </div>
+            <div className="pending-requests">
+                <h2>Pending Requests</h2>
+                <ul>
+                    {pendingRequests.map((request, index) => (
+                        <li key={index}>{request}</li>
+                    ))}
+                </ul>
             </div>
             <div className="users-section">
                 <h2>Donors</h2>

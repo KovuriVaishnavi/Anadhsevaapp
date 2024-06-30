@@ -7,7 +7,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './DonateForm.css';
 
-const DonationForm = () => {
+const DonateForm = () => {
   const [foodItems, setFoodItems] = useState('');
   const [quantity, setQuantity] = useState('');
   const [shelfLife, setShelfLife] = useState('');
@@ -191,4 +191,4 @@ const styles = {
   }
 };
 
-export default DonationForm;
+export default DonateForm;

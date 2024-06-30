@@ -20,7 +20,7 @@ const UserRegistration = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('/api/otp/send-otp', {
+      const response = await fetch('http://localhost:3001/api/otp', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -41,7 +41,7 @@ const UserRegistration = () => {
   const handleOtpSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('/api/otp/validate-otp', {
+      const response = await fetch('http://localhost:3001/api/otpverify', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

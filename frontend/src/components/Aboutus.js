@@ -9,7 +9,7 @@ function Aboutus() {
             <h3>We Are In A Mission To Help Helpless</h3>
             <p>Our foundation is dedicated to fighting hunger and providing support to those in need. We believe in ensuring that no one goes hungry and everyone has access to healthy and nutritious food.</p>
             <p>Join us in our mission to make a difference in the lives of the helpless. Together, we can provide food and hope to those who need it most.</p>
-            <button>About Us</button>
+           
         </div>
         <div className="foundation-images">
             <img src={img3} alt="Foundation" />

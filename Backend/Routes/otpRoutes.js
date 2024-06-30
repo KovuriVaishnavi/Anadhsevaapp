@@ -1,16 +1,15 @@
 const express = require('express');
+const { sendOtp } = require('../contollers/otp.controller');
+
 const router = express.Router();
-const sendOtp = require('../contollers/otp.controller');
 
 router.post('/', async (req, res) => {
   try {
     const { email } = req.body;
-    const otp = await sendOtp({ email });
-    res.status(200).json({ message: "OTP sent", otp });
+    const result = await sendOtp({ email });
+    res.status(200).json(result);
   } catch (error) {
-    console.log("Cannot send otp to email")
-    console.error(error); // Log the error details
-    res.status(500).json({ message: "Error", error: error.message || error });
+    res.status(500).json({ message: error.message });
   }
 });
 

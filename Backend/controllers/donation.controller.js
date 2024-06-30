@@ -11,6 +11,7 @@ const postDonation = errorHandler(async (req, res) => {
   const donorName = user.username;
   const loc = user.loc;
   let newDonation;
+
   if (!receiverId) {
     newDonation = new Donation({
       donorId,
@@ -21,7 +22,6 @@ const postDonation = errorHandler(async (req, res) => {
       quantity,
       misc: true,
     });
-    await newDonation.save();
   } else {
     newDonation = new Donation({
       donorId,
@@ -32,16 +32,16 @@ const postDonation = errorHandler(async (req, res) => {
       quantity,
       receiverId,
     });
-    await newDonation.save();
   }
+  await newDonation.save();
 
   // Update receiver request status to fulfilled
-  const request = await ReceiverRequest.findOneAndUpdate(receiverId, {
+  const request = await ReceiverRequest.findByIdAndUpdate(receiverId, {
     status: "taken",
   });
   if (!request) {
     res.status(404);
-    throw new Error("Request not fount");
+    throw new Error("Request not found");
   }
 
   const transaction = new Transaction({
@@ -57,6 +57,12 @@ const postDonation = errorHandler(async (req, res) => {
   res.status(201).json(newDonation);
 });
 
+const getDonation = errorHandler(async (req, res) => {
+  const donations = await Donation.find();
+  res.json(donations);
+});
+
 module.exports = {
   postDonation,
+  getDonation,
 };
