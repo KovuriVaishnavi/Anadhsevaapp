@@ -10,7 +10,7 @@ const UserTypeSelection = () => {
     if (userType === 'volunteer') {
       navigate(`/volunteer/dashboard`);
     } else {
-      navigate(`/${userType}/login`);
+      navigate(`/${userType}`);
     }
   };
 
@@ -18,7 +18,7 @@ const UserTypeSelection = () => {
     <div className="user-type-selection-container">
       <h1 className="title">Select User Type</h1>
       <div className="user-types">
-        <div className="user-type-card" onClick={() => handleSelection('donor')}>
+        <div className="user-type-card" onClick={() => handleSelection('donate')}>
           <h2>Donate</h2>
           <p>Contribute to the cause by donating food or resources.</p>
         </div>
@@ -26,7 +26,7 @@ const UserTypeSelection = () => {
           <h2>Volunteer</h2>
           <p>Help us by volunteering your time and effort.</p>
         </div>
-        <div className="user-type-card" onClick={() => handleSelection('receiver')}>
+        <div className="user-type-card" onClick={() => handleSelection('request')}>
           <h2>Request</h2>
           <p>Receive food and resources for those in need.</p>
         </div>

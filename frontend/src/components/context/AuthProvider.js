@@ -11,7 +11,7 @@ export const AuthProvider = ({ children }) => {
         // Check if there is a token in local storage
         const token = localStorage.getItem('token');
         if (token) {
-            axios.get('/api/auth/me', { headers: { Authorization: `Bearer ${token}` } })
+            axios.get('/api/auth/', { headers: { Authorization: `Bearer ${token}` } })
                 .then(response => setUser(response.data))
                 .catch(() => localStorage.removeItem('token')); // Remove invalid token
         }

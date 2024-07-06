@@ -10,11 +10,13 @@ import Donate from "./components/Donate";
 import Header from './components/Header';
 import Home from './components/Home';
 import Homepage from './components/Homepage';
-import Log from './components/Logs/log';
-import UserTypeSelection from './components/UserTypeSelection';
-import { default as VolunteerActiveRequests, default as VolunteerDashboard } from './components/VolunteerDashboard';
 import Login from './components/login';
+import Log from './components/Logs/log';
+import RequestForm from './components/RequestForm/RequestForm';
 import UserRegistration from './components/userRegistration';
+import UserTypeSelection from './components/UserTypeSelection';
+import VolunteerActiveRequests, { default as VolunteerDashboard } from './components/VolunteerDashboard';
+
 
 function App() {
   return (
@@ -34,6 +36,7 @@ function App() {
           <Route path="/volunteer/dashboard" element={<VolunteerDashboard />} />
           <Route path="/volunteer" element={<VolunteerActiveRequests/>} />
           <Route path="/donate" element={<Donate />} />
+          <Route path="/request" element={<RequestForm />} />
           <Route path="/log" element={<Log />} />
         </Routes>
       </div>

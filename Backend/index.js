@@ -14,13 +14,12 @@ const otpRoutes = require('./Routes/otpRoutes'); // Import the OTP routes
 const validateOTP = require('./Routes/validateRoute'); // Import the OTP verification routes
 
 const homeRoutes = require("./Routes/home.route.js");
-// const userRoutes = require("./Routes/user.route.js");
+const userRoutes = require("./Routes/user.route.js");
 const donationRoutes = require("./Routes/donation.route.js");
 const requestRoutes = require("./Routes/request.route.js");
 const adminRoutes = require("./Routes/admin.route.js");
 const volunteerRoutes = require("./Routes/volunteer.route.js");
-const { validateToken } = require("./middleware/tokenvalidation");
-const SendRequestsRoutes = require("./Routes/sendRequests.route.js");
+const { validateToken } = require("./middleware/validateToken");
 
 mongoose
     .connect("mongodb://127.0.0.1:27017/food-bank")

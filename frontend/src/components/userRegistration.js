@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import './UserRegistration.css'; // Ensure this CSS file is imported for styling
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import "./UserRegistration.css"; // Ensure this CSS file is imported for styling
 
 const UserRegistration = () => {
   const [formData, setFormData] = useState({
-    organisationName: '',
-    email: '',
-    phone: '',
-    address: '',
+    name: "",
+    email: "",
+    phone: "",
+    address: "",
   });
-  const [otp, setOtp] = useState('');
+  const [otp, setOtp] = useState("");
   const [isOtpSent, setIsOtpSent] = useState(false);
   const navigate = useNavigate();
 
@@ -20,42 +20,50 @@ const UserRegistration = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:3001/api/otp', {
-        method: 'POST',
+      const response = await fetch("http://localhost:3001/api/otp", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
       });
       if (response.ok) {
         setIsOtpSent(true);
       } else {
-        alert('Error sending OTP');
+        alert("Error sending OTP");
       }
     } catch (error) {
-      console.error('Error:', error);
-      alert('Error sending OTP');
+      console.error("Error:", error);
+      alert("Error sending OTP");
     }
   };
-  
+
   const handleOtpSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:3001/api/otpverify', {
-        method: 'POST',
+      let response = await fetch("http://localhost:3001/api/otpVerify", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ email: formData.email, otp }),
       });
       if (response.ok) {
-        navigate('/user-type-selection');
+        const loca = {lat: 0, long: 0};
+        response = await fetch("http://localhost:3001/api/auth/register", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ ...formData, ...loca}),
+        });
+        navigate("/login");
       } else {
-        alert('Invalid OTP');
+        alert("Invalid OTP");
       }
     } catch (error) {
-      console.error('Error:', error);
-      alert('Error validating OTP');
+      console.error("Error:", error);
+      alert("Error validating OTP");
     }
   };
 
@@ -66,19 +74,47 @@ const UserRegistration = () => {
           <h2>User Registration</h2>
           <label>
             Organisation Name / Name:
-            <input type="text" placeholder='Enter Your Name' name="organisationName" value={formData.organisationName} onChange={handleChange} required />
+            <input
+              type="text"
+              placeholder="Enter Your Name"
+              name="name"
+              value={formData.organisationName}
+              onChange={handleChange}
+              required
+            />
           </label>
           <label>
             Email:
-            <input type="email" placeholder='Enter Your Email' name="email" value={formData.email} onChange={handleChange} required />
+            <input
+              type="email"
+              placeholder="Enter Your Email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+            />
           </label>
           <label>
             Phone:
-            <input type="text"  placeholder='Enter Your Mobile Number' name="phone" value={formData.phone} onChange={handleChange} required />
+            <input
+              type="text"
+              placeholder="Enter Your Mobile Number"
+              name="phone"
+              value={formData.phone}
+              onChange={handleChange}
+              required
+            />
           </label>
           <label>
             Address:
-            <input type="text"  placeholder='Enter Your Address' name="address" value={formData.address} onChange={handleChange} required />
+            <input
+              type="text"
+              placeholder="Enter Your Address"
+              name="address"
+              value={formData.address}
+              onChange={handleChange}
+              required
+            />
           </label>
           <button type="submit">Register</button>
         </form>
@@ -86,7 +122,13 @@ const UserRegistration = () => {
         <form onSubmit={handleOtpSubmit} className="otp-form">
           <label>
             Enter OTP:
-            <input type="text" name="otp" value={otp} onChange={(e) => setOtp(e.target.value)} required />
+            <input
+              type="text"
+              name="otp"
+              value={otp}
+              onChange={(e) => setOtp(e.target.value)}
+              required
+            />
           </label>
           <button type="submit">Submit OTP</button>
         </form>

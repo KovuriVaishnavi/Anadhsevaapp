@@ -11,7 +11,7 @@ const Login = () => {
 
   const handleSendOtp = async () => {
     try {
-      await axios.post('http://localhost:5000/api/auth/send-otp', { email });
+      await axios.post('http://localhost:3001/api/otp', { email });
       setOtpSent(true);
       setOtpSuccessMessage('OTP has been sent to your email.');
     } catch (error) {
@@ -27,9 +27,17 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:5000/api/auth/login', { email, otp });
+      await axios.post('http://localhost:3001/api/otpVerify', { email, otp });
       alert('Login successful.');
-      window.location.href = '/'; // Redirect to home page or dashboard
+      const response = await axios.post('http://localhost:3001/api/auth/login', {email});
+      if(response.status !== 200) {
+        console.log(response.status);
+      }else {
+        console.log(response.data);
+        localStorage.setItem("token", response.data.token);
+        localStorage.setItem("user", JSON.stringify(response.data.user));
+        window.location.href = '/user-type-selection'; // Redirect to home page or dashboard
+      }
     } catch (error) {
       if (error.response && error.response.data) {
         setErrorMessage(error.response.data); // Set error message from server response
