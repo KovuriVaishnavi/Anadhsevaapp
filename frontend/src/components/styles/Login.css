@@ -8,6 +8,17 @@
     margin: 50px auto;
     box-shadow: 0 0 10px rgba(1, 0, 0, 0.4);
 }
+
+.input-otp {
+    display: flex;
+}
+.input-otp input {
+    flex: 2 1 0;
+    margin-right: 2px;
+}
+.input-otp button {
+    flex: 1 1 0;
+}
   
 .registration-form, .otp-form, .login-form {
     display: flex;

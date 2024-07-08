@@ -1,6 +1,7 @@
 const Donation = require("../Models/donation.model"); // Adjust the path as per your project structure
 const ReceiverRequest = require("../Models/request.model");
 const Transaction = require("../Models/transaction.model.js");
+const errorHandler = require("../middleware/errorHandling.js");
 const createReceiverRequest = async (req, res) => {
   const { receiverName, receiverId, loc, foodItems, quantity } = req.body;
 
@@ -21,7 +22,7 @@ const createReceiverRequest = async (req, res) => {
 };
 const getAllRequests = async (req, res) => {
   try {
-    const requests = await Donation.find();
+    const requests = await ReceiverRequest.find();
     res.status(200).json(requests);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -59,12 +60,18 @@ const getvolunteeredRequests = async (req, res) => {
   }
 };
 
+const getPendingRequests = async (req, res) => {
+  const requests = await ReceiverRequest.find({status: "pending"});
+  res.status(200).json(requests);
+}
+
 module.exports = {
   getAllRequests,
   getCompletedRequests,
   getFulfilledReceiverRequests,
   getvolunteeredRequests,
-  createReceiverRequest
+  createReceiverRequest,
+  getPendingRequests
 };
 
 // controllers/requestController.js

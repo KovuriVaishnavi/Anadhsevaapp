@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 require("dotenv").config();
 const errorHandler = require("./middleware/errorHandling.js");
+const {adminAuth} = require("./middleware/adminAuth.js")
 
 const app = express();
 app.use(cors());
@@ -36,8 +37,9 @@ app.use('/api/otpVerify', validateOTP);
 // Apply validateToken middleware to the routes that require authentication
 app.use("/api/donation", validateToken, donationRoutes);
 app.use("/api/request", validateToken, requestRoutes);
-app.use("/api/admin", validateToken, adminRoutes);
 app.use("/api/volunteer", validateToken, volunteerRoutes);
+// app.use(adminAuth);
+app.use("/admin", validateToken, adminRoutes);
 
 app.use(errorHandler);
 

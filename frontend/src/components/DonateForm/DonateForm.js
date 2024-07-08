@@ -7,7 +7,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './DonateForm.css';
 
-const DonateForm = () => {
+const DonateForm = ({requestId}) => {
   const [foodItems, setFoodItems] = useState('');
   const [quantity, setQuantity] = useState('');
   const [shelfLife, setShelfLife] = useState('');
@@ -24,29 +24,32 @@ const DonateForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const formData = new FormData();
-    formData.append('foodItems', foodItems);
-    formData.append('quantity', quantity);
-    formData.append('shelfLife', shelfLife);
-    formData.append('location', location);
-    formData.append('picture', picture);
     
-    // Add user-specific data
-    formData.append('donorId', user.donorId);
-    formData.append('donorName', user.donorName);
-    formData.append('loc', user.loc);
+    const formData = {
+      foodItems,
+      quantity,
+      shelfLife,
+      location,
+      picture,
+      donorId: user.donorId,
+      donorName: user.donorName,
+      location: user.location,
+      requestId
+    }
 
     try {
-      const response = await axios.post('http://localhost:4000/api/donations', formData, {
+      const response = await axios.post('http://localhost:3001/api/donation', formData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          Authorization: "Bearer " + localStorage.getItem("token"),
         },
       });
+      if(!response.ok) {
+        console.log("error posting donation");
+      }
       toast.success('Donation submitted successfully!');
       setShowModal(false);
       resetForm();
     } catch (error) {
-      console.error('Error submitting donation:', error);
       toast.error('Failed to submit donation.');
     }
   };
@@ -61,7 +64,7 @@ const DonateForm = () => {
 
   return (
     <div className="container custom-modal">
-      <Button onClick={() => setShowModal(true)} className="mb-3" style={styles.greenButton}>
+      <Button onClick={() => setShowModal(true)} className="my-1" style={styles.greenButton}>
         <FaUtensils className="me-2" /> Donate Food Items
       </Button>
 
@@ -70,7 +73,7 @@ const DonateForm = () => {
           <Modal.Title>Donate Food Items</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <form onSubmit={handleSubmit} style={styles.form}>
+          <form style={styles.form}>
             <div className="row">
               <div className="col-md-6">
                 <div className="mb-3">
@@ -137,7 +140,7 @@ const DonateForm = () => {
                     required
                   />
                 </div>
-                <Button type="submit" className="btn btn-success mt-3">
+                <Button type="submit" onClick={handleSubmit} className="btn btn-success mt-3">
                   Submit Donation
                 </Button>
               </div>

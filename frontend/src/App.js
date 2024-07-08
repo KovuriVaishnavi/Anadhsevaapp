@@ -14,9 +14,9 @@ import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
 import UserRegistration from './components/userRegistration';
 import UserTypeSelection from './components/UserTypeSelection';
-import VolunteerDashboard from './components/VolunteerDashboard';
+// import VolunteerDashboard from './components/VolunteerDashboard';
 import Log from './components/Logs/log';
-import Donate from "./components/Donate";
+import Donation from "./components/Donation/Donation";
 
 
 function App() {
@@ -27,16 +27,14 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/homepage" element={<Homepage/>} />
-    
           <Route path="/aboutus" element={<Aboutus/>} />
           <Route path="/contactus" element={<Contact/>} />
           <Route path="/login" element={<Login/>} />
           <Route path="/register" element={<UserRegistration/>} />
           <Route path="/admin" element={<AdminDashboard/>} />
           <Route path="/user-type-selection" element={<UserTypeSelection />} />
-          <Route path="/volunteer/dashboard" element={<VolunteerDashboard />} />
           <Route path="/volunteer" element={<VolunteerActiveRequests/>} />
-          <Route path="/donate" element={<Donate />} />
+          <Route path="/donate" element={<Donation />} />
           <Route path="/request" element={<RequestForm />} />
           <Route path="/log" element={<Log />} />
         </Routes>

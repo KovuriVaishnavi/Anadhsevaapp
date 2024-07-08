@@ -1,58 +1,59 @@
 const errorHandler = require("express-async-handler");
 const Donation = require("../Models/donation.model");
 const ReceiverRequest = require("../Models/request.model");
-// const Transaction = require("../Models/transaction.model");
+const Transaction = require("../Models/transaction.model");
 
 // Post a donation to a specific receiver request
 const postDonation = errorHandler(async (req, res) => {
-  const { foodItems, quantity, receiverId, shelfLife } = req.body;
+  const { foodItems, quantity, requestId, shelfLife } = req.body;
   const user = req.user;
-  const donorId = user._id;
-  const donorName = user.username;
-  const loc = user.loc;
+  const donorId = req.user._id;
+  const donarName = user.name;
+  const location = user.location;
   let newDonation;
-
-  if (!receiverId) {
+  
+  
+  if (requestId === 0) {
+    console.log("in instant donation");
     newDonation = new Donation({
       donorId,
-      donorName,
-      loc,
-      shelfLife,
+      location,
+      donarName,
       foodItems,
       quantity,
+      shelfLife,
       misc: true,
     });
+    await newDonation.save();
   } else {
+    const request = await ReceiverRequest.findById(requestId);
+  const receiverId = request.receiverId;
     newDonation = new Donation({
       donorId,
-      donorName,
-      loc,
-      shelfLife,
+      location,
+      donarName,
       foodItems,
       quantity,
+      shelfLife,
       receiverId,
+      status: "taken"
     });
+    const updatedRequest = await ReceiverRequest.findByIdAndUpdate(requestId, {
+      status: "taken",
+    });
+    const donation = await newDonation.save();
+    
+    
+    const transaction = new Transaction({
+      dloc: location,
+      rloc: request.location,
+      donationId: newDonation._id,
+      donarName,
+      receiverName: request.receiverName,
+      donorId: donorId,
+    });
+    await transaction.save();
   }
-  await newDonation.save();
-
-  // Update receiver request status to fulfilled
-  const request = await ReceiverRequest.findByIdAndUpdate(receiverId, {
-    status: "taken",
-  });
-  if (!request) {
-    res.status(404);
-    throw new Error("Request not found");
-  }
-
-  const transaction = new Transaction({
-    dloc: loc,
-    rloc: request.loc,
-    donationId: newDonation._id,
-    donorName: donorName,
-    receiverName: request.receiverName,
-    donorId: donorId,
-  });
-  await transaction.save();
 
   res.status(201).json(newDonation);
 });

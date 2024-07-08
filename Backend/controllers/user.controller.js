@@ -9,14 +9,14 @@ const registerUser = async (req, res) => {
         .json({ msg: "Email already exists, please try again!" });
     }
     const user = await userModel.create({
+      name: req.body.name,
       email: req.body.email,
-      phone: req.body.phone,
       location: {
         name: req.body.address,
         lat: req.body.lat,
         long: req.body.long,
       },
-      name: req.body.name,
+      phone: req.body.phone,
     });
     res.status(201).json({ msg: "User created successfully", user: user });
   } catch (error) {
@@ -33,8 +33,8 @@ const loginUser = async (req, res) => {
         .status(401)
         .json({ message: "Invalid login credentials! Please check it." });
 
-    let payload = { email: user.email };
-    const token = jwt.sign(payload, "SecretKey", { expiresIn: "1h" });
+    let payload = { user };
+    const token = jwt.sign(payload, process.env.SECRET, { expiresIn: "1h" });
     res.status(200).json({
       token,
       user,

@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { toast } from "react-toastify";
 import "./styles/VolunteerDashboard.css";
 
 export default function VolunteerActiveRequests() {
   const [transactions, setTransactions] = useState([]);
-  const [logs, setLogs] = useState([]);
+  const [allTransactions, setAllTransactions] = useState([]); // For preserving original transactions
+  const [donations, setDonations] = useState([]);
   const [location, setLocation] = useState({
     lat: 0,
     long: 0,
@@ -24,162 +26,173 @@ export default function VolunteerActiveRequests() {
 
   const getTransactions = async () => {
     try {
-      const response = await axios.get("http://localhost:3001/api/volunteer");
-      setTransactions(response.data);
+      const response = await axios.get("http://localhost:3001/api/volunteer", {
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("token"),
+        },
+      });
+      setTransactions(response.data.transactions);
+      setAllTransactions(response.data.transactions); // Save all transactions for filtering
+      setDonations(response.data.donations);
     } catch (error) {
       console.error("Error fetching transactions:", error);
     }
   };
 
-  function distancecalculator(lat1, lon1, lat2, lon2) {
-    var p = 0.017453292519943295; // Math.PI / 180
-    const toRadians = (x) => (x * Math.PI) / 180;
-    const R = 6371; // Radius of the earth in km
-    const dlat = toRadians(lat2 - lat1);
-    const dlon = toRadians(lon2 - lon1);
-    const a =
-      Math.sin(dlat / 2) * Math.sin(dlat / 2) +
-      Math.cos(toRadians(lat1)) *
-        Math.cos(toRadians(lat2)) *
-        Math.sin(dlon / 2) *
-        Math.sin(dlon / 2);
+  function haversineDistance(lat1, lon1, lat2, lon2) {
+    // Convert degrees to radians
+    function toRadians(degrees) {
+        return degrees * (Math.PI / 180);
+    }
+
+    const R = 6371; // Radius of the Earth in kilometers
+    const dLat = toRadians(lat2 - lat1);
+    const dLon = toRadians(lon2 - lon1);
+
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+              Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2)) *
+              Math.sin(dLon / 2) * Math.sin(dLon / 2);
+
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    const d = R * c;
-    return d;
-  }
+    console.log(R * c);
+    return R * c; // Distance in kilometers
+}
 
-  function filterTransactions(maxDistance) {
-    let templist = [];
-    transactions.forEach((element) => {
-      const d1 = distancecalculator(
-        location.lat,
-        location.long,
-        element.dloc.lat,
-        element.dloc.long
-      );
-      const d2 = distancecalculator(
-        location.lat,
-        location.long,
-        element.rloc.lat,
-        element.rloc.long
-      );
-      if (d1 <= maxDistance || d2 <= maxDistance) {
-        templist.push(element);
-      }
+
+  const filterTransactions = (maxDistance) => {
+    const filteredTransactions = allTransactions.filter((transaction) => {
+      const d1 = haversineDistance(location, transaction.dloc);
+      const d2 = haversineDistance(location, transaction.rloc);
+      return d1 <= maxDistance || d2 <= maxDistance;
     });
-    setTransactions(templist);
-  }
+    setTransactions(filteredTransactions);
+  };
 
-  function fivekmrange() {
+  const fivekmrange = () => {
     filterTransactions(5);
-  }
+  };
 
-  function tenkmrange() {
+  const tenkmrange = () => {
     filterTransactions(10);
-  }
+  };
 
-  function cityrange() {
+  const cityrange = () => {
     filterTransactions(15);
-  }
+  };
 
-  function others() {
-    let templist = [];
-    transactions.forEach((element) => {
-      const d1 = distancecalculator(
-        location.lat,
-        location.long,
-        element.dloc.lat,
-        element.dloc.long
+  const others = () => {
+    setTransactions(allTransactions);
+  };
+
+  const acceptTransaction = async (id) => {
+    try {
+      const response = await axios.put(
+        `http://localhost:3001/api/volunteer/${id}`,
+        {},
+        {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          },
+        }
       );
-      const d2 = distancecalculator(
-        location.lat,
-        location.long,
-        element.rloc.lat,
-        element.rloc.long
-      );
-      if (d1 > 15 || d2 > 15) {
-        templist.push(element);
+
+      if (response.status !== 200) {
+        toast.error("Could not take request");
+        return;
       }
-    });
-    setTransactions(templist);
-  }
 
-  function setstatus(transaction, status) {
-    transaction.status = status;
-    setLogs([...logs]);
-  }
+      setTransactions((prevTransactions) =>
+        prevTransactions.map((transaction) =>
+          transaction._id === id
+            ? { ...transaction, status: "accepted" }
+            : transaction
+        )
+      );
 
-  const LogBox = ({ log }) => {
-    log.status = "Taken Up";
-    return (
-      <div className="VolunteerDashboardCss.logbox">
-        <div className="VolunteerDashboardCss.log-details">
-          <p className="donorname">Donor Name : {log.donorName}</p>
-          <p className="receivername">Receiver Name : {log.receiverName}</p>
-          <p className="donationid">Transaction ID : {log.donationId}</p>
-          <p className="logstatus">Status : {log.status}</p>
-        </div>
-        <div className="log-updation-buttons">
-          <button className="unmet" onClick={() => setstatus(log, "Unmet")}>
-            Unmet
+      toast.success("Request accepted successfully");
+    } catch (error) {
+      console.error("Error accepting transaction:", error);
+      toast.error("Could not take request");
+    }
+  };
+
+  return (
+    <div className="volunteer">
+      <div className="instant-donate">
+        <div className="filter">
+          <button
+            className="filter-button green-button"
+            onClick={fivekmrange}
+          >
+            5 Km
           </button>
-          <button className="donebutton" onClick={() => setstatus(log, "Done")}>
-            Done
+          <button
+            className="filter-button green-button"
+            onClick={tenkmrange}
+          >
+            10 Km
+          </button>
+          <button
+            className="filter-button green-button"
+            onClick={cityrange}
+          >
+            City
+          </button>
+          <button
+            className="filter-button green-button"
+            onClick={others}
+          >
+            All
           </button>
         </div>
       </div>
-    );
-  };
-
-  async function addtologs(transactions, transaction) {
-    let templist = transactions.filter((x) => x._id !== transaction._id);
-    setstatus(transaction, "active");
-    setTransactions([...templist, transaction]);
-    await axios.post("http://localhost:3001/api/volunteer", transactions);
-  }
-
-  return (
-    <div className="volunteer-container">
-      <div className="volunteering-heading">VOLUNTEER</div>
-      <div className="VolunteerActiveRequests bg-primary">
-        <div className="filtertab">
-          <button className="5kmrange" onClick={fivekmrange}>
-            5KM
-          </button>
-          <button className="10kmrange" onClick={tenkmrange}>
-            10KM
-          </button>
-          <button className="cityrange" onClick={cityrange}>
-            City
-          </button>
-          <button className="others" onClick={others}>
-            Others
-          </button>
-        </div>
-        <div className="requests-container">
-          <div className="requeststab">
-            {transactions.length > 0 ? (
-              transactions.map((transaction) => (
-                <div key={transaction._id} className="request-container">
-                  <div className="request-details">
-                    <p className="donorname">{transaction.donorName}</p>
-                    <p className="receivername">{transaction.dloc.address}</p>
-                    <p className="receivername">{transaction.receiverName}</p>
-                    <p className="receivername">{transaction.rloc.address}</p>
-                    <p className="donationid">{transaction.donationId}</p>
-                  </div>
-                  <button
-                    className="takeuprequest-button"
-                    onClick={() => addtologs(transactions, transaction)}
-                  >
-                    Take Up
-                  </button>
+      <div className="flex-box">
+        <div className="transactions">
+          <h2>Transactions</h2>
+          {transactions.length > 0 ? (
+            transactions.map((transaction) => (
+              <div key={transaction._id} className="transaction">
+                <div className="donar-details">
+                  <h3>From</h3>
+                  <p className="donorname">{transaction.donarName}</p>
+                  <p className="receivername">
+                    Address: {transaction.dloc.name}
+                  </p>
                 </div>
-              ))
-            ) : (
-              <p>No transactions available</p>
-            )}
-          </div>
+                <button
+                  className="accept-button"
+                  onClick={() => acceptTransaction(transaction._id)}
+                >
+                  Accept
+                </button>
+                <div className="receiver-details">
+                  <h3>To</h3>
+                  <p className="receivername">{transaction.receiverName}</p>
+                  <p className="receivername">
+                    Address: {transaction.rloc.name}
+                  </p>
+                </div>
+              </div>
+            ))
+          ) : (
+            <p>No transactions available</p>
+          )}
+        </div>
+        <div className="instant-donations">
+          <h2>Donations</h2>
+          {donations.length > 0 ? (
+            donations.map((donation) => (
+              <div key={donation._id} className="donation">
+                <div className="donation-values">
+                  <p>DonarName: {donation.donarName}</p>
+                  <p>Address: {donation.location.name}</p>
+                </div>
+                <button className="accept-button">Accept</button>
+              </div>
+            ))
+          ) : (
+            <p>No available Donations</p>
+          )}
         </div>
       </div>
     </div>

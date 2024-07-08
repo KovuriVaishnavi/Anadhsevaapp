@@ -3,12 +3,13 @@ const { Schema } = mongoose; // Destructure Schema from mongoose
 
 const transactionSchema = new Schema(
   {
-    donorName: { type: String, ref: "User", required: true },
+    donarName: { type: String, ref: "User", required: true },
+    donorId: { type: Schema.Types.ObjectId, ref: "User" },
     receiverName: { type: String, ref: "User", required: true },
     volunteerId: {
       type: Schema.Types.ObjectId,
       ref: "Volunteer",
-      required: true,
+      required: false,
     },
     donationId: {
       type: Schema.Types.ObjectId,

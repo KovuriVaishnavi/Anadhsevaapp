@@ -1,8 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./UserRegistration.css"; // Ensure this CSS file is imported for styling
 
 const UserRegistration = () => {
+  const [latitude, setLatitude] = useState(null);
+  const [longitude, setLongitude] = useState(null);
+  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -27,7 +31,7 @@ const UserRegistration = () => {
         },
         body: JSON.stringify(formData),
       });
-      if (response.ok) {
+      if (response.status === 200) {
         setIsOtpSent(true);
       } else {
         alert("Error sending OTP");
@@ -37,6 +41,35 @@ const UserRegistration = () => {
       alert("Error sending OTP");
     }
   };
+
+  useEffect(() => {
+    const getLocation = () => {
+      setIsLoading(true);
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            setLatitude(position.coords.latitude);
+            setLongitude(position.coords.longitude);
+            setError(null);
+            setIsLoading(false);
+          },
+          (error) => {
+            setError(error.message);
+            setIsLoading(false);
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0,
+          }
+        );
+      } else {
+        setError("Geolocation is not supported by your browser.");
+        setIsLoading(false);
+      }
+    };
+    getLocation();
+  }, []);
 
   const handleOtpSubmit = async (e) => {
     e.preventDefault();
@@ -48,16 +81,26 @@ const UserRegistration = () => {
         },
         body: JSON.stringify({ email: formData.email, otp }),
       });
+
       if (response.ok) {
-        const loca = {lat: 0, long: 0};
+        
+
+        const loca = { lat: latitude, long: longitude };
+
         response = await fetch("http://localhost:3001/api/auth/register", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ ...formData, ...loca}),
+          body: JSON.stringify({ ...formData, ...loca }),
         });
-        navigate("/login");
+
+        if (response.ok) {
+          navigate("/login");
+        } else {
+          const result = await response.json();
+          alert(result.msg || "Error creating user");
+        }
       } else {
         alert("Invalid OTP");
       }
@@ -78,7 +121,7 @@ const UserRegistration = () => {
               type="text"
               placeholder="Enter Your Name"
               name="name"
-              value={formData.organisationName}
+              value={formData.name}
               onChange={handleChange}
               required
             />

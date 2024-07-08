@@ -3,11 +3,9 @@ const {
   getAllTransactions,
   updateTransaction
 } = require("../controllers/volunteer.controller");
-const { adminAuth } = require("../middleware/adminAuth");
 const router = express.Router();
 
-// Admin Routes
-// router.use(adminAuth);
-// router.use("/").get(getAllTransactions).put(updateTransaction);
+router.route("/").get(getAllTransactions);
+router.put("/:id", updateTransaction);
 
 module.exports = router;

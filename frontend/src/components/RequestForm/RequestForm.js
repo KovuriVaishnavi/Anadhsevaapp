@@ -14,7 +14,6 @@ const RequestForm = () => {
   });
 
   const [submitted, setSubmitted] = useState(false);
-  const [isVisible, setIsVisible] = useState(false); // State to manage modal visibility
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -41,7 +40,6 @@ const RequestForm = () => {
         quantity: 0,
         status: "open",
       });
-      setIsVisible(false); // Close the modal
       setSubmitted(false); // Reset submitted state
     }
   }, [submitted]);
@@ -60,7 +58,7 @@ const RequestForm = () => {
         },
         {
           headers: {
-            "Authorization": "Bearer " + localStorage.getItem("token"),
+            Authorization: "Bearer " + localStorage.getItem("token"),
           },
         }
       );
@@ -73,59 +71,38 @@ const RequestForm = () => {
       setSubmitted(true);
     }
   };
-  
-
-  const handleClose = () => {
-    setIsVisible(false); // Close the modal
-  };
-
-  const handleShow = () => {
-    setIsVisible(true); // Show the modal
-  };
 
   return (
     <div>
-      <button onClick={handleShow} className="btn btn-success mb-3">
-        Add Request
-      </button>
-
-      {isVisible && (
-        <div className="request-form-overlay">
-          <div className="request-form-container">
-            <button className="close-button" onClick={handleClose}>
-              ×
-            </button>
-            <h2>Submit a Request</h2>
-            <form onSubmit={handleSubmit}>
-              <label>
-                Food Items:
-                <input
-                  type="text"
-                  name="foodItems"
-                  value={formData.foodItems.join(", ")}
-                  onChange={handleChange}
-                  placeholder="Please enter food items required (separated by comma)"
-                  required
-                />
-              </label>
-              <label>
-                Quantity:
-                <input
-                  type="number"
-                  name="quantity"
-                  value={formData.quantity}
-                  onChange={handleChange}
-                  placeholder="Please enter quantity"
-                  required
-                />
-              </label>
-              <button type="submit" className="btn btn-success">
-                Submit Request
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
+      <div className="request-form-container">
+        <h2>Submit a Request</h2>
+        <form onSubmit={handleSubmit}>
+          <label>
+            Food Items:
+            <input
+              type="text"
+              name="foodItems"
+              value={formData.foodItems.join(", ")}
+              onChange={handleChange}
+              placeholder="Please enter food items required (separated by comma)"
+              required
+            />
+          </label>
+          <label>
+            Quantity:
+            <input
+              type="number"
+              name="quantity"
+              value={formData.quantity}
+              onChange={handleChange}
+              placeholder="Please enter quantity"
+              required
+            />
+          </label>
+          <input type="submit" className="btn btn-success">
+          </input>
+        </form>
+      </div>
     </div>
   );
 };

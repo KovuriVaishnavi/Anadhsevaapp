@@ -13,21 +13,25 @@ const Log = () => {
         let endpoint;
         switch (type) {
             case 'donor':
-                endpoint = 'http://localhost:9000/api/request/donated';
+                endpoint = 'http://localhost:3001/api/request/donated';
                 break;
             case 'receiver':
-                endpoint = 'http://localhost:9000/api/request/received';
+                endpoint = 'http://localhost:3001/api/request/received';
                 break;
             case 'volunteer':
-                endpoint = 'http://localhost:9000/api/request/volunteered';
+                endpoint = 'http://localhost:3001/api/request/volunteered';
                 break;
             default:
-                endpoint = 'http://localhost:9000/api/request/donated';
+                endpoint = 'http://localhost:3001/api/request/donated';
                 break;
         }
 
         try {
-            const response = await axios.get(endpoint);
+            const response = await axios.get(endpoint, {
+                headers: {
+                    Authorization: "Bearer " + localStorage.getItem("token")
+                }
+            });
             setRequests(response.data);
         } catch (error) {
             console.error('Error fetching requests:', error);

@@ -1,24 +1,25 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import './styles/Login.css'; // Assuming you store the CSS in Auth.css
+import React, { useState } from "react";
+import { toast } from "react-toastify";
+import axios from "axios";
+import "./styles/Login.css"; // Assuming you store the CSS in Auth.css
 
 const Login = () => {
-  const [email, setEmail] = useState('');
-  const [otp, setOtp] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
+  const [email, setEmail] = useState("");
+  const [otp, setOtp] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const [otpSent, setOtpSent] = useState(false);
-  const [otpSuccessMessage, setOtpSuccessMessage] = useState('');
+  const [otpSuccessMessage, setOtpSuccessMessage] = useState("");
 
   const handleSendOtp = async () => {
     try {
-      await axios.post('http://localhost:3001/api/otp', { email });
+      await axios.post("http://localhost:3001/api/otp", { email });
       setOtpSent(true);
-      setOtpSuccessMessage('OTP has been sent to your email.');
+      setOtpSuccessMessage("OTP has been sent to your email.");
     } catch (error) {
       if (error.response && error.response.data) {
         setErrorMessage(error.response.data);
       } else {
-        setErrorMessage('Something went wrong. Please try again.');
+        setErrorMessage("Something went wrong. Please try again.");
       }
       console.error(error);
     }
@@ -27,22 +28,27 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:3001/api/otpVerify', { email, otp });
-      alert('Login successful.');
-      const response = await axios.post('http://localhost:3001/api/auth/login', {email});
-      if(response.status !== 200) {
+      await axios.post("http://localhost:3001/api/otpVerify", { email, otp });
+      toast.success("Login successful.");
+      const response = await axios.post(
+        "http://localhost:3001/api/auth/login",
+        { email }
+      );
+      if (response.status !== 200) {
         console.log(response.status);
-      }else {
+      } else {
         console.log(response.data);
         localStorage.setItem("token", response.data.token);
         localStorage.setItem("user", JSON.stringify(response.data.user));
-        window.location.href = '/user-type-selection'; // Redirect to home page or dashboard
+        if (response.data.user.isAdmin)
+          window.location.href = "/admin"; // Redirect to home page or dashboard
+        else window.location.href = "/user-type-selection"; // Redirect to home page or dashboard
       }
     } catch (error) {
       if (error.response && error.response.data) {
         setErrorMessage(error.response.data); // Set error message from server response
       } else {
-        setErrorMessage('Something went wrong. Please try again.'); // Fallback error message
+        setErrorMessage("Something went wrong. Please try again."); // Fallback error message
       }
       console.error(error); // Log the error for debugging
     }
@@ -52,10 +58,11 @@ const Login = () => {
     <div className="login-form-container">
       <form className="login-form" onSubmit={handleSubmit}>
         <h2>Login</h2>
-        <label>
-          Email:
+        <div className="input-otp">
           <input
+            placeholder="Enter your Email..."
             type="email"
+            name="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -63,7 +70,8 @@ const Login = () => {
           <button type="button" onClick={handleSendOtp}>
             Send OTP
           </button>
-        </label>
+        </div>
+        <br />
         {otpSent && (
           <>
             <label>
@@ -75,12 +83,16 @@ const Login = () => {
                 required
               />
             </label>
-            <p style={{ color: 'green' }}>{otpSuccessMessage}</p>
+            <p style={{ color: "green" }}>OTP has been sent to your email.</p>
           </>
         )}
         <button type="submit">Login</button>
       </form>
-      {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+      {errorMessage ? (
+        <p style={{ color: "red" }}>Something went wrong. Please try again.</p>
+      ) : (
+        <></>
+      )}
     </div>
   );
 };
