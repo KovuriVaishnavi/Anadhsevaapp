@@ -21,6 +21,7 @@ const receiverRequestSchema = new mongoose.Schema(
       enum: ["pending", "taken", "complete"],
       default: "pending",
     },
+    message: { type: String, default: "--" },
   },
   { timestamps: true }
 );

@@ -1,10 +1,26 @@
 import React from 'react';
 import './styles/Contact.css';
+import { ToastContainer, toast } from 'react-toastify';
+import axios from 'axios';
 
 const Contact = () => {
-    function send() {
-        alert("Thank you for your message");
-        window.location.href = '/';
+    const send = async () => {
+        const response = await axios.post("http://localhost:3001/api/contact", {
+            name: document.querySelector("#name").value,
+            subject: document.querySelector("#subject").value,
+            message: document.querySelector("#message").value,
+            email: document.querySelector("#email").value
+        }, {
+            headers: {
+                Authorization: "Bearer " + localStorage.getItem("token")
+            }
+        });
+
+        if(response.status !== 201) {
+            toast.error("Failed to post Request");
+            return;
+        }
+        toast.success("Message successfully sent");
     }
 
     return (
@@ -12,12 +28,12 @@ const Contact = () => {
             <h2>Get in Touch</h2>
             <div className="contact-container">
                 <div className="contact-form">
-                    <textarea placeholder="Enter Message"></textarea>
+                    <textarea id='message' name='message' placeholder="Enter Message"></textarea>
                     <div className="contact-inputs">
-                        <input type="text" placeholder="Enter your name" />
-                        <input type="email" placeholder="Email" />
+                        <input id='name' type="text" name='name' placeholder="Enter your name" />
+                        <input id='email' type="email" name='email' placeholder="Email" />
                     </div>
-                    <input type="text" placeholder="Enter Subject" />
+                    <input id='subject' type="text" name='subject' placeholder="Enter Subject" />
                     <button onClick={send}>Send</button>
                 </div>
                 <div className="contact-info">
@@ -35,6 +51,17 @@ const Contact = () => {
                     </div>
                 </div>
             </div>
+            <ToastContainer
+        position="bottom-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
         </div>
     );
 };

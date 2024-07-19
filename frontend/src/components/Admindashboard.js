@@ -34,11 +34,14 @@ const AdminDashboard = () => {
     totalVolunteers: 0,
     inventoryStatus: { items: 0, categories: 0 },
   });
-  const [activities, setActivities] = useState([]);
+  // const [activities, setActivities] = useState([]);
   const [pendingRequests, setPendingRequests] = useState([]);
-  const [donors, setDonors] = useState([]);
-  const [volunteers, setVolunteers] = useState([]);
-  const [recipients, setRecipients] = useState([]);
+  const [completedRequests, setCompletedRequests] = useState([]);
+  // const [donors, setDonors] = useState([]);
+  // const [volunteers, setVolunteers] = useState([]);
+  // const [recipients, setRecipients] = useState([]);
+  const [donations, setDonations] = useState([]);
+  const [requests, setRequests] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -59,22 +62,22 @@ const AdminDashboard = () => {
           }
         });
 
-        console.log("Donations:", donationsRes.data);
-        console.log("Requests:", requestsRes.data);
-        console.log("Users:", usersRes.data);
+        setDonations(donationsRes.data);
+        setRequests(requestsRes.data);
 
         setMetrics({
           totalDonations: donationsRes.data.length,
           totalReceivers: requestsRes.data.length,
-          totalVolunteers: usersRes.data.filter(user => user.role === 'volunteer').length,
+          totalUsers: usersRes.data.length,
           inventoryStatus: { items: donationsRes.data.length, categories: 10 }, // Adjust as necessary
         });
 
         setPendingRequests(requestsRes.data.filter(request => request.status === 'pending'));
-        setDonors(usersRes.data.filter(user => user.role === 'donor'));
-        setVolunteers(usersRes.data.filter(user => user.role === 'volunteer'));
-        setRecipients(usersRes.data.filter(user => user.role === 'recipient'));
-        setActivities(['Activity 1', 'Activity 2', 'Activity 3']); // Replace with real activities
+        setCompletedRequests(requestsRes.data.filter(request => request.status === 'complete'));
+        // setDonors(usersRes.data.filter(user => user.role === 'donor'));
+        // setVolunteers(usersRes.data.filter(user => user.role === 'volunteer'));
+        // setRecipients(usersRes.data.filter(user => user.role === 'recipient'));
+        // setActivities(['Activity 1', 'Activity 2', 'Activity 3']); // Replace with real activities
       } catch (error) {
         console.error('Error fetching data', error);
       }
@@ -88,7 +91,7 @@ const AdminDashboard = () => {
     labels: ['Completed', 'Taken', 'Pending'],
     datasets: [
       {
-        data: [300, 200, 100],
+        data: [completedRequests.length, requests.length - completedRequests.length - pendingRequests.length, pendingRequests.length],
         backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
         hoverBackgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
       },
@@ -149,8 +152,8 @@ const AdminDashboard = () => {
           <p>{metrics.totalReceivers}</p>
         </div>
         <div className="metric-card">
-          <h2>Total Volunteers</h2>
-          <p>{metrics.totalVolunteers}</p>
+          <h2>Total Users</h2>
+          <p>{metrics.totalUsers}</p>
         </div>
       </div>
       <div className="chart-section">
@@ -159,58 +162,58 @@ const AdminDashboard = () => {
           <h3>Requests Status</h3>
           <Pie data={pieData} />
         </div>
-        <div className="chart-wrapper">
+        {/* <div className="chart-wrapper">
           <h3>Summary</h3>
           <Bar data={barData} />
-        </div>
+        </div> */}
         <div className="chart-wrapper">
           <h3>Donations Over Time</h3>
           <Line data={lineData} />
         </div>
       </div>
       <div className="users-section">
-        <h2>Donors</h2>
+        <h2>Donations</h2>
         <table className="user-table">
           <thead>
             <tr>
               <th>Name</th>
-              <th>Email</th>
-              <th>Donations</th>
+              <th>Quantity</th>
+              <th>Status</th>
             </tr>
           </thead>
           <tbody>
-            {donors.map((donor, index) => (
+            {donations.map((donation, index) => (
               <tr key={index}>
-                <td>{donor.name}</td>
-                <td>{donor.email}</td>
-                <td>{donor.donations.length}</td>
+                <td>{donation.donarName}</td>
+                <td>{donation.quantity}</td>
+                <td>{donation.status}</td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
       <div className="users-section">
-        <h2>Recipients</h2>
+        <h2>Requests</h2>
         <table className="user-table">
           <thead>
             <tr>
               <th>Name</th>
-              <th>Email</th>
-              <th>Requests</th>
+              <th>Qunatity</th>
+              <th>Status</th>
             </tr>
           </thead>
           <tbody>
-            {recipients.map((recipient, index) => (
+            {requests.map((request, index) => (
               <tr key={index}>
-                <td>{recipient.name}</td>
-                <td>{recipient.email}</td>
-                <td>{recipient.requests.length}</td>
+                <td>{request.receiverName}</td>
+                <td>{request.quantity}</td>
+                <td>{request.status}</td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-      <div className="users-section">
+      {/* <div className="users-section">
         <h2>Volunteers</h2>
         <table className="user-table">
           <thead>
@@ -230,7 +233,7 @@ const AdminDashboard = () => {
             ))}
           </tbody>
         </table>
-      </div>
+      </div> */}
     </div>
   );
 };

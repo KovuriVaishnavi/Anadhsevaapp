@@ -6,13 +6,15 @@ const {
   getFulfilledReceiverRequests,
   getvolunteeredRequests,
   createReceiverRequest,
-  getPendingRequests
+  getPendingRequests,
+  updateRequestStatus
 } = require("../controllers/request.controller");
 
 // Route to get all requests
 router.get("/", getAllRequests);
 router.get("/pending", getPendingRequests)
 router.post("/", createReceiverRequest);
+router.put("/:id", updateRequestStatus);
 
 // Route to get completed requests
 router.get("/donated", getCompletedRequests);

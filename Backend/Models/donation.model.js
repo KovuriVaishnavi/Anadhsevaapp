@@ -23,6 +23,8 @@ const donationSchema = new mongoose.Schema(
     shelfLife: { type: Number, required: true },
     receiverId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     misc: { type: Boolean, default: false },
+    requestId: { type: mongoose.Schema.Types.ObjectId, ref: "ReceiverRequest" },
+    message: { type: String },
   },
   { timestamps: true }
 );

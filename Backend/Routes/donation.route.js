@@ -5,6 +5,8 @@ const {
 } = require("../controllers/donation.controller");
 const router = express.Router();
 
+router.get("/", getDonation);
+
 router.post("/", postDonation);
 
 module.exports = router;

@@ -14,7 +14,6 @@ const postDonation = errorHandler(async (req, res) => {
   
   
   if (requestId === 0) {
-    console.log("in instant donation");
     newDonation = new Donation({
       donorId,
       location,
@@ -35,6 +34,7 @@ const postDonation = errorHandler(async (req, res) => {
       foodItems,
       quantity,
       shelfLife,
+      requestId,
       receiverId,
       status: "taken"
     });
@@ -49,6 +49,7 @@ const postDonation = errorHandler(async (req, res) => {
       rloc: request.location,
       donationId: newDonation._id,
       donarName,
+      requestId,
       receiverName: request.receiverName,
       donorId: donorId,
     });

@@ -20,6 +20,7 @@ const donationRoutes = require("./Routes/donation.route.js");
 const requestRoutes = require("./Routes/request.route.js");
 const adminRoutes = require("./Routes/admin.route.js");
 const volunteerRoutes = require("./Routes/volunteer.route.js");
+const contactController = require("./controllers/contact.controller.js")
 const { validateToken } = require("./middleware/validateToken");
 
 mongoose
@@ -33,6 +34,8 @@ app.use("/api/auth", userRoutes);
 
 app.use('/api/otp', otpRoutes);
 app.use('/api/otpVerify', validateOTP);
+app.post("/api/contact", contactController.postContactForm);
+app.get("/api/contact", contactController.getContacts);
 
 // Apply validateToken middleware to the routes that require authentication
 app.use("/api/donation", validateToken, donationRoutes);

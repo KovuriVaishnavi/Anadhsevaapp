@@ -1,30 +1,40 @@
-import axios from 'axios';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import React, { useState } from 'react';
-import { Button, Modal } from 'react-bootstrap';
-import { FaCamera, FaClock, FaMapMarkerAlt, FaUtensils, FaWeight } from 'react-icons/fa';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import './DonateForm.css';
-
-const DonateForm = ({requestId}) => {
-  const [foodItems, setFoodItems] = useState('');
-  const [quantity, setQuantity] = useState('');
-  const [shelfLife, setShelfLife] = useState('');
-  const [location, setLocation] = useState('');
+import axios from "axios";
+import "bootstrap/dist/css/bootstrap.min.css";
+import React, { useState } from "react";
+import { Button, Modal } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
+import {
+  FaCamera,
+  FaClock,
+  FaMapMarkerAlt,
+  FaUtensils,
+  FaWeight,
+} from "react-icons/fa";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import "./DonateForm.css";
+import Maps from "../Maps.js";
+import donateformpic from "../images/donateformpic.jpg";
+import donateformpic2 from "../images/donateformpic2.jpg";
+const DonateForm = ({ request, requestId, setShowForm }) => {
+  const [foodItems, setFoodItems] = useState("");
+  const [quantity, setQuantity] = useState("");
+  const [shelfLife, setShelfLife] = useState("");
+  const [location, setLocation] = useState("");
   const [picture, setPicture] = useState(null);
-  const [showModal, setShowModal] = useState(false);
+  const [showModal, setShowModal] = useState(true);
+  const navigate = useNavigate();
 
   // Dummy user data (for illustration, replace with actual user data from authentication context)
   const user = {
-    donorId: '123456', // Example donorId
-    donorName: 'John Doe', // Example donorName
-    loc: 'Some Location', // Example loc
+    donorId: "123456", // Example donorId
+    donorName: "John Doe", // Example donorName
+    loc: "Some Location", // Example loc
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     const formData = {
       foodItems,
       quantity,
@@ -34,42 +44,51 @@ const DonateForm = ({requestId}) => {
       donorId: user.donorId,
       donorName: user.donorName,
       location: user.location,
-      requestId
-    }
+      requestId,
+    };
 
     try {
-      const response = await axios.post('http://localhost:3001/api/donation', formData, {
-        headers: {
-          Authorization: "Bearer " + localStorage.getItem("token"),
-        },
-      });
-      if(!response.ok) {
+      const response = await axios.post(
+        "http://localhost:3001/api/donation",
+        formData,
+        {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          },
+        }
+      );
+      if (!response.ok) {
         console.log("error posting donation");
       }
-      toast.success('Donation submitted successfully!');
+      toast.success("Donation submitted successfully!");
       setShowModal(false);
+      setShowForm(false); // Ensure the form is closed after submission
       resetForm();
     } catch (error) {
-      toast.error('Failed to submit donation.');
+      toast.error("Failed to submit donation.");
     }
   };
 
   const resetForm = () => {
-    setFoodItems('');
-    setQuantity('');
-    setShelfLife('');
-    setLocation('');
+    setFoodItems("");
+    setQuantity("");
+    setShelfLife("");
+    setLocation("");
     setPicture(null);
   };
 
   return (
     <div className="container custom-modal">
-      <Button onClick={() => setShowModal(true)} className="my-1" style={styles.greenButton}>
-        <FaUtensils className="me-2" /> Donate Food Items
-      </Button>
-
-      <Modal show={showModal} onHide={() => setShowModal(false)} dialogClassName="custom-modal">
-        <Modal.Header closeButton >
+      <Modal
+        show={showModal}
+        onHide={() => {
+          setShowModal(false);
+          setShowForm(false); // Close the form when modal is hidden
+          navigate(`/donate`);
+        }}
+        dialogClassName="custom-modal"
+      >
+        <Modal.Header closeButton>
           <Modal.Title>Donate Food Items</Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -140,15 +159,25 @@ const DonateForm = ({requestId}) => {
                     required
                   />
                 </div>
-                <Button type="submit" onClick={handleSubmit} className="btn btn-success mt-3">
+                <Button
+                  type="submit"
+                  onClick={handleSubmit}
+                  className="btn btn-success mt-3"
+                >
                   Submit Donation
                 </Button>
               </div>
               <div className="col-md-6">
-                <div style={styles.mapBox}>
-                  <p style={styles.mapPlaceholderText}>
-                    Placeholder for Map Component
-                  </p>
+                <div
+                  style={{
+                    ...styles.mapBox,
+                    ...styles.mapPlaceholderText,
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  Donate FOOD
                 </div>
               </div>
             </div>
@@ -156,7 +185,6 @@ const DonateForm = ({requestId}) => {
         </Modal.Body>
       </Modal>
 
-      {/* ToastContainer for displaying toasts */}
       <ToastContainer
         position="bottom-right"
         autoClose={3000}
@@ -174,24 +202,22 @@ const DonateForm = ({requestId}) => {
 
 const styles = {
   greenButton: {
-    backgroundColor: '#28a745',
-    borderColor: '#28a745',
+    backgroundColor: "#28a745",
+    borderColor: "#28a745",
   },
   form: {
-    minWidth: '400px',
+    minWidth: "400px",
   },
   mapBox: {
-    height: '400px',
-    border: '1px solid #ccc',
-    marginTop: '20px',
-    backgroundColor: '#fff',
+    height: "400px",
+    border: "1px solid #ccc",
+    backgroundColor: "#fff",
   },
   mapPlaceholderText: {
-    textAlign: 'center',
-    paddingTop: '150px',
-    fontSize: '18px',
-    color: '#999'
-  }
+    textAlign: "center",
+    fontSize: "18px",
+    color: "#999",
+  },
 };
 
 export default DonateForm;

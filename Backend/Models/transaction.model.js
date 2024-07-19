@@ -31,6 +31,8 @@ const transactionSchema = new Schema(
       enum: ["pending", "accepted", "failed", "completed"],
       default: "pending",
     },
+    requestId: { type: mongoose.Schema.Types.ObjectId, ref: "ReceiverRequest" },
+    message: { type: String },
   },
   { timestamps: true }
 );

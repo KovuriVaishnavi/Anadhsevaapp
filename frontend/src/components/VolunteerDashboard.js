@@ -42,27 +42,39 @@ export default function VolunteerActiveRequests() {
   function haversineDistance(lat1, lon1, lat2, lon2) {
     // Convert degrees to radians
     function toRadians(degrees) {
-        return degrees * (Math.PI / 180);
+      return degrees * (Math.PI / 180);
     }
 
     const R = 6371; // Radius of the Earth in kilometers
     const dLat = toRadians(lat2 - lat1);
     const dLon = toRadians(lon2 - lon1);
 
-    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-              Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2)) *
-              Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(toRadians(lat1)) *
+        Math.cos(toRadians(lat2)) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
 
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     console.log(R * c);
     return R * c; // Distance in kilometers
-}
-
+  }
 
   const filterTransactions = (maxDistance) => {
     const filteredTransactions = allTransactions.filter((transaction) => {
-      const d1 = haversineDistance(location, transaction.dloc);
-      const d2 = haversineDistance(location, transaction.rloc);
+      const d1 = haversineDistance(
+        location.lat,
+        location.long,
+        transaction.dloc.lat,
+        transaction.dloc.long
+      );
+      const d2 = haversineDistance(
+        location.lat,
+        location.long,
+        transaction.rloc.lat,
+        transaction.rloc.long
+      );
       return d1 <= maxDistance || d2 <= maxDistance;
     });
     setTransactions(filteredTransactions);
@@ -118,30 +130,26 @@ export default function VolunteerActiveRequests() {
 
   return (
     <div className="volunteer">
-      <div className="instant-donate">
+      <div
+        style={{
+          textAlign: "center",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+        className="instant-donate"
+      >
         <div className="filter">
-          <button
-            className="filter-button green-button"
-            onClick={fivekmrange}
-          >
+          <button className="filter-button green-button" onClick={fivekmrange}>
             5 Km
           </button>
-          <button
-            className="filter-button green-button"
-            onClick={tenkmrange}
-          >
+          <button className="filter-button green-button" onClick={tenkmrange}>
             10 Km
           </button>
-          <button
-            className="filter-button green-button"
-            onClick={cityrange}
-          >
+          <button className="filter-button green-button" onClick={cityrange}>
             City
           </button>
-          <button
-            className="filter-button green-button"
-            onClick={others}
-          >
+          <button className="filter-button green-button" onClick={others}>
             All
           </button>
         </div>
